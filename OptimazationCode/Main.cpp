@@ -59,7 +59,7 @@ Good luck, and feel free to get in touch if you have any specific questions.
 
 #include <stdio.h>
 #include <string>
-#include <list>
+//#include <list>
 #include <chrono>
 #include <iostream>
 #include <sstream>
@@ -69,6 +69,10 @@ Good luck, and feel free to get in touch if you have any specific questions.
 
 class Block
 {
+private:
+    std::string m_name;
+    std::vector<std::string> m_attributes;
+
 public:
     Block() { }
     ~Block() { }
@@ -77,10 +81,7 @@ public:
     void SetName(std::string name) { m_name = name; }
 
     void AddAttribute(std::string attribute) { m_attributes.push_back(attribute); }
-    std::list<std::string> GetAttributes() { return m_attributes; }
-
-    std::string m_name;
-    std::list<std::string> m_attributes;
+    std::vector<std::string> GetAttributes() { return m_attributes; }
 };
 
 struct Graph
@@ -97,16 +98,16 @@ struct Graph
         m_blocks.push_back(block);
     }
 
-    std::list<Block*> GetBlocks() {
+    std::vector<Block*> GetBlocks() {
         return m_blocks;
     }
 
-    std::list<Block*> GetBlocksWithAttribute(std::string attribute)
+    std::vector<Block*> GetBlocksWithAttribute(std::string attribute)
     {
-        std::list<Block*> blocksWithAttribute;
+        std::vector<Block*> blocksWithAttribute;
         for (Block* b : m_blocks)
         {
-            std::list<std::string> attributes = b->GetAttributes();
+            std::vector<std::string> attributes = b->GetAttributes();
             for (std::string s : attributes)
             {
                 if (s == attribute)
@@ -165,9 +166,9 @@ struct Graph
 
         return potentialName;
     }
-
+private:
     // Here is our collection of blocks in this graph.
-    std::list<Block*> m_blocks;
+    std::vector<Block*> m_blocks;
 };
 
 
