@@ -66,6 +66,7 @@ Good luck, and feel free to get in touch if you have any specific questions.
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <map>
 
 class Block
 {
@@ -120,38 +121,6 @@ struct Graph
         return blocksWithAttribute;
     }
 
-    // Determines if the specified blockName is already the name of a block in this Graph.
-    // The TC of origianl code is constant O(n), and the optimazation code runs O(n) in the worst situation.
-    bool BlockNameExistsInGraph(std::string blockName)
-    {
-        /* original code
-        bool exists = false;
-        for (auto i = m_blocks.begin(); i != m_blocks.end(); i++)
-        {
-            Block* iterBlock = *i;
-            std::string iterName = iterBlock->GetName();
-            if (iterName == blockName)
-            {
-                exists = true;
-            }
-        }
-
-        return exists;
-        */
-        /* Optimazation Code Start*/
-        for (Block* iterBlock : m_blocks)
-        {
-            std::string iterName = iterBlock->GetName();
-            if (iterName == blockName)
-            {
-                return true;
-            }
-        }
-
-        return false;
-        /* Optimazation Code End*/
-
-    }
 
     // Generate a unique name for this block within the graph.
     // If there's no name collision, then the original Block name is returned.
@@ -165,38 +134,23 @@ struct Graph
         unsigned int count = 0;
 
         bool foundUniqueName = false;
-        while (foundUniqueName == false)
-        {
-            /*
-            if (!BlockNameExistsInGraph(potentialName))
-            {
-                foundUniqueName = true;
-            }
-            else if (BlockNameExistsInGraph(potentialName))
-            {
-                std::ostringstream s;
-                s << originalName << count;
-                potentialName = s.str();
-                count++;
-            }
-            */
-            //the original code called the checking mether twice.
-            if (BlockNameExistsInGraph(potentialName))
-            {
-                std::ostringstream s;
-                s << originalName << count;
-                potentialName = s.str();
-                count++;
-            }else {
-                foundUniqueName = true;
-            }
+        //std::cout << "GetUniqueBlockNameInGraph" << potentialName << "\n";
+        if (m_names.count(originalName) > 0) {
+            std::ostringstream s;
+            s << originalName << (m_names[originalName] + 1);
+            m_names[originalName]++;
+            potentialName = s.str();
         }
-
+        else {
+            m_names.insert({ originalName, 0 });
+        }
+        //std::cout << "GetUniqueBlockNameInGraph" << potentialName << "\n";
         return potentialName;
     }
 private:
     // Here is our collection of blocks in this graph.
     std::vector<Block*> m_blocks;
+    std::map<std::string, int> m_names;
 };
 
 
