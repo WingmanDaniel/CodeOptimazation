@@ -70,10 +70,8 @@ Good luck, and feel free to get in touch if you have any specific questions.
 
 class Block
 {
-private:
     std::string m_name;
     std::vector<std::string> m_attributes;
-
 public:
     Block() { }
     ~Block() { }
@@ -94,9 +92,20 @@ struct Graph
         // Make sure we have a unique name for this block within the content of this Graph object.
         std::string uniqueName = GetUniqueBlockNameInGraph(block);
         block->SetName(uniqueName);
-
         // Add it to our collection of blocks.
         m_blocks.push_back(block);
+        //Store the map information attribute -> blocks
+        std::vector<std::string> attributes = block->GetAttributes();
+        for (std::string s : attributes)
+        {
+            if (m_attributes.count(s) > 0) {
+
+                m_attributes[s].push_back(block);
+            }
+            else {
+                m_attributes.insert({ s, {block}});
+            }
+        }
     }
 
     std::vector<Block*> GetBlocks() {
@@ -105,6 +114,7 @@ struct Graph
 
     std::vector<Block*> GetBlocksWithAttribute(std::string attribute)
     {
+        /*Orignal Code
         std::vector<Block*> blocksWithAttribute;
         for (Block* b : m_blocks)
         {
@@ -113,12 +123,21 @@ struct Graph
             {
                 if (s == attribute)
                 {
+                    std::cout << "GetBlocksWithAttribute: " << b->GetName() << "\n";
                     blocksWithAttribute.push_back(b);
                     break;
                 }
             }
         }
         return blocksWithAttribute;
+        */
+        /* Log for checking
+        for (Block* b : m_attributes[attribute])
+        {
+            std::cout << "GetBlocksWithAttribute: " << b->GetName() << "\n";
+        }
+        */
+        return m_attributes[attribute];
     }
 
 
@@ -136,12 +155,14 @@ struct Graph
         bool foundUniqueName = false;
         //std::cout << "GetUniqueBlockNameInGraph" << potentialName << "\n";
         if (m_names.count(originalName) > 0) {
+            //c1: exist -> update the max and create unique name;
             std::ostringstream s;
             s << originalName << (m_names[originalName] + 1);
             m_names[originalName]++;
             potentialName = s.str();
         }
         else {
+            //c2: Not exist-> create unique name directly;
             m_names.insert({ originalName, 0 });
         }
         //std::cout << "GetUniqueBlockNameInGraph" << potentialName << "\n";
@@ -150,7 +171,8 @@ struct Graph
 private:
     // Here is our collection of blocks in this graph.
     std::vector<Block*> m_blocks;
-    std::map<std::string, int> m_names;
+    std::map<std::string, int> m_names;             //name base -> suffix number
+    std::map<std::string, std::vector<Block*>> m_attributes;    //attribute -> blocks
 };
 
 
