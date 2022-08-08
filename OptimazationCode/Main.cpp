@@ -121,8 +121,10 @@ struct Graph
     }
 
     // Determines if the specified blockName is already the name of a block in this Graph.
+    // The TC of origianl code is constant O(n), and the optimazation code runs O(n) in the worst situation.
     bool BlockNameExistsInGraph(std::string blockName)
     {
+        /* original code
         bool exists = false;
         for (auto i = m_blocks.begin(); i != m_blocks.end(); i++)
         {
@@ -135,6 +137,20 @@ struct Graph
         }
 
         return exists;
+        */
+        /* Optimazation Code Start*/
+        for (Block* iterBlock : m_blocks)
+        {
+            std::string iterName = iterBlock->GetName();
+            if (iterName == blockName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+        /* Optimazation Code End*/
+
     }
 
     // Generate a unique name for this block within the graph.
@@ -151,6 +167,7 @@ struct Graph
         bool foundUniqueName = false;
         while (foundUniqueName == false)
         {
+            /*
             if (!BlockNameExistsInGraph(potentialName))
             {
                 foundUniqueName = true;
@@ -161,6 +178,17 @@ struct Graph
                 s << originalName << count;
                 potentialName = s.str();
                 count++;
+            }
+            */
+            //the original code called the checking mether twice.
+            if (BlockNameExistsInGraph(potentialName))
+            {
+                std::ostringstream s;
+                s << originalName << count;
+                potentialName = s.str();
+                count++;
+            }else {
+                foundUniqueName = true;
             }
         }
 
